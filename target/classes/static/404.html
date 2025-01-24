@@ -30,6 +30,8 @@
 
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
 </head>
 
 <body>
@@ -58,16 +60,20 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-auto">
-                        <a href="index.html" class="nav-item nav-link">Accueil</a>
-                        <a href="about.html" class="nav-item nav-link">A propos</a>
+                        <a th:href="@{/}" class="nav-item nav-link">Accueil</a>
+                        <a th:href="@{/about}" class="nav-item nav-link">A propos</a>
+                        <!-- <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Property</a>
+                            
+                        </div> -->
                         <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Profil</a>
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Profil</a>
                             <div class="dropdown-menu rounded-0 m-0">
-                                <a href="testimonial.html" class="dropdown-item">Agent collecteur</a>
-                                <a href="404.html" class="dropdown-item active">Client</a>
+                                <a th:href="@{/testimonial.html}" class="dropdown-item">Agent Collecteur</a>
+                                <a href="404.html" class="dropdown-item">Espace Client</a>
                             </div>
                         </div>
-                        <a href="contact.html" class="nav-item nav-link">Contactez-nous</a>
+                        <a th:href="@{/contact}" class="nav-item nav-link active">Contactez-nous</a>
             </nav>
         </div>
         <!-- Navbar End -->
@@ -77,15 +83,17 @@
         <div class="container-fluid header bg-white p-0">
             <div class="row g-0 align-items-center flex-column-reverse flex-md-row">
                 <div class="col-md-6 p-5 mt-lg-5">
-                    <h1 class="display-5 animated fadeIn mb-4">Espace Client</h1>
+                    <h1 class="display-5 animated fadeIn mb-4">Contactez-nous</h1>
                     <nav aria-label="breadcrumb animated fadeIn">
                         <ol class="breadcrumb text-uppercase">
                             <li class="breadcrumb-item"><a href="#">Accueil</a></li>
                             <li class="breadcrumb-item"><a href="#">Profil</a></li>
+                            <li class="breadcrumb-item text-body active" aria-current="page">Contactez-nous</li>
                         </ol>
                     </nav>
                 </div>
                 <div class="col-md-6 animated fadeIn">
+                    <br><br>
                     <img class="img-fluid" src="img/header.jpg" alt="">
                 </div>
             </div>
@@ -93,21 +101,103 @@
         <!-- Header End -->
 
 
-        <!-- 404 Start -->
-        <div class="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
-            <div class="container text-center">
-                <div class="row justify-content-center">
-                    <div class="col-lg-6">
-                        <i class="display-1 text-primary"></i>
-                        <h1 class="display-1">Espace Client</h1>
-                        <h1 class="mb-4">Bienvenue Mr.Mme...........</h1>
-                        <p class="mb-4">ghsdfvzyhcijazevoirjeiavhuiijrv,aioerjnvioerj</p>
-                        <a class="btn btn-primary py-3 px-5" href="">Retourner sur l'écran d'accueil</a>
+        <!-- Contact Start -->
+        <div class="container-xxl py-5">
+            <div class="container">
+                <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
+                    <h1 class="mb-3">Contactez-nous</h1>
+                    <p>Eirmod sed ipsum dolor sit rebum labore magna erat. Tempor ut dolore lorem kasd vero ipsum sit
+                        eirmod sit. Ipsum diam justo sed rebum vero dolor duo.</p>
+                </div>
+                <div class="row g-4">
+                    <div class="col-12">
+                        <div class="row gy-4">
+                            <div class="col-md-6 col-lg-4 wow fadeIn" data-wow-delay="0.1s">
+                                <div class="bg-light rounded p-3">
+                                    <div class="d-flex align-items-center bg-white rounded p-3"
+                                        style="border: 1px dashed rgba(0, 185, 142, .3)">
+                                        <div class="icon me-3" style="width: 45px; height: 45px;">
+                                            <i class="fa fa-map-marker-alt text-primary"></i>
+                                        </div>
+                                        <span>123 Street, Cotonou, Bénin</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-4 wow fadeIn" data-wow-delay="0.3s">
+                                <div class="bg-light rounded p-3">
+                                    <div class="d-flex align-items-center bg-white rounded p-3"
+                                        style="border: 1px dashed rgba(0, 185, 142, .3)">
+                                        <div class="icon me-3" style="width: 45px; height: 45px;">
+                                            <i class="fa fa-envelope-open text-primary"></i>
+                                        </div>
+                                        <span>sgds@example.com</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-4 wow fadeIn" data-wow-delay="0.5s">
+                                <div class="bg-light rounded p-3">
+                                    <div class="d-flex align-items-center bg-white rounded p-3"
+                                        style="border: 1px dashed rgba(0, 185, 142, .3)">
+                                        <div class="icon me-3" style="width: 45px; height: 45px;">
+                                            <i class="fa fa-phone-alt text-primary"></i>
+                                        </div>
+                                        <span>+229 013456789</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                        <div id="map" style="height: 400px; border: 1px solid #ccc;" class="position-relative rounded w-100"></div>
+                        <form id="location-form" action="/location" method="post" onsubmit="event.preventDefault(); getLocation();">
+                            <button type="submit" id="location">Get Location</button>
+                        </form>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="wow fadeInUp" data-wow-delay="0.5s">
+                            <p class="mb-4">The contact form is currently inactive. Get a functional and working contact
+                                form with Ajax & PHP in a few minutes. Just copy and paste the files, add a little code
+                                and you're done. <a href="https://htmlcodex.com/contact-form">Download Now</a>.</p>
+                            <form>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="text" class="form-control" id="name" placeholder="Your Name">
+                                            <label for="name">Your Name</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="email" class="form-control" id="email"
+                                                placeholder="Your Email">
+                                            <label for="email">Your Email</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating">
+                                            <input type="text" class="form-control" id="subject" placeholder="Subject">
+                                            <label for="subject">Subject</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating">
+                                            <textarea class="form-control" placeholder="Leave a message here"
+                                                id="message" style="height: 150px"></textarea>
+                                            <label for="message">Message</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <button class="btn btn-primary w-100 py-3" type="submit">Send Message</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- 404 End -->
+        <!-- Contact End -->
 
 
         <!-- Footer Start -->
@@ -115,7 +205,7 @@
             <div class="container py-5">
                 <div class="row g-5">
                     <div class="col-lg-3 col-md-6">
-                        <h5 class="text-white mb-4">Contactez-nous</h5>
+                        <h5 class="text-white mb-4">Get In Touch</h5>
                         <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>123 Street, Cotonou, Bénin</p>
                         <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+229 0134567890</p>
                         <p class="mb-2"><i class="fa fa-envelope me-3"></i>sgds@example.com</p>
@@ -135,6 +225,29 @@
                         <a class="btn btn-link text-white-50" href="">Terms & Condition</a>
                     </div>
                     <div class="col-lg-3 col-md-6">
+                        <h5 class="text-white mb-4">Photo Gallery</h5>
+                        <div class="row g-2 pt-2">
+                            <div class="col-4">
+                                <img class="img-fluid rounded bg-light p-1" src="img/property-1.jpg" alt="">
+                            </div>
+                            <div class="col-4">
+                                <img class="img-fluid rounded bg-light p-1" src="img/property-2.jpg" alt="">
+                            </div>
+                            <div class="col-4">
+                                <img class="img-fluid rounded bg-light p-1" src="img/property-3.jpg" alt="">
+                            </div>
+                            <div class="col-4">
+                                <img class="img-fluid rounded bg-light p-1" src="img/property-4.jpg" alt="">
+                            </div>
+                            <div class="col-4">
+                                <img class="img-fluid rounded bg-light p-1" src="img/property-5.jpg" alt="">
+                            </div>
+                            <div class="col-4">
+                                <img class="img-fluid rounded bg-light p-1" src="img/property-6.jpg" alt="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
                         <h5 class="text-white mb-4">Newsletter</h5>
                         <p>Dolor amet sit justo amet elitr clita ipsum elitr est.</p>
                         <div class="position-relative mx-auto" style="max-width: 400px;">
@@ -150,7 +263,7 @@
                 <div class="copyright">
                     <div class="row">
                         <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                            &copy; <a class="border-bottom" href="#">SGDS</a>, All Right Reserved.
+                            &copy; <a class="border-bottom" href="#">Your Site Name</a>, All Right Reserved.
 
                             <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
                             Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a>
@@ -168,7 +281,46 @@
             </div>
         </div>
         <!-- Footer End -->
-
+         <!--Code javasript pour la map-->
+         
+         <script> 
+            const options = { 
+                enableHighAccuracy: true,
+                 timeout: 5000,
+                  maximumAge: 0, 
+                }; 
+                function success(pos) 
+                { const crd = pos.coords; 
+                    
+                    document.getElementById('location').innerHTML =
+                     ` Latitude : ${crd.latitude} <br>
+                      Longitude: ${crd.longitude} <br>
+                       More or less ${crd.accuracy} meters. `; 
+                       // Envoi des données au backend 
+                       fetch('/location', {
+                         method: 'POST', headers: { 
+                            'Content-Type': 'application/json' }, 
+                            body: JSON.stringify({
+                                latitude: crd.latitude, 
+                                longitude: crd.longitude,
+                                 accuracy: crd.accuracy
+                                 }) 
+                                }) .then(response => response.json()) 
+                                .then(data => console.log('Success:', data))
+                                 .catch(error => console.error('Error:', error));
+                                 } 
+                        function error(err) { 
+                            console.warn(`ERROR(${err.code}): ${err.message}`); 
+                        } 
+                        
+                        function getLocation() {
+                             if (navigator.geolocation) { 
+                                navigator.geolocation.getCurrentPosition(success, error, options); 
+                            } else { 
+                                document.getElementById('location').innerHTML = "Geolocation is not supported by this browser.";
+                             }
+                             } </script>
+         <!--end map-->
 
         <!-- Back to Top -->
         <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>

@@ -36,10 +36,6 @@ public class SgdsController {
         return "about";
     }
 
-    @GetMapping("/testimonial")
-    public String testimonial() {
-        return "testimonial ";
-    }
 
     @GetMapping("/contact")
     public String contact() {
@@ -76,36 +72,38 @@ public class SgdsController {
 
 
     @GetMapping("/login")
-    public String login(Model model) {
+    public String login(Model model, @RequestParam(required = false) String redirectUrl) {
         Utilisateur utilisateur = new Utilisateur();
-
         model.addAttribute("utilisateur", utilisateur);
+        model.addAttribute("redirectUrl", redirectUrl);
         return "login";
     }
 
 
     @SuppressWarnings({ "unchecked", "null" })
     @PostMapping("/login")
-    public String login(@RequestParam String email, @RequestParam String motDePasse, Model model, HttpServletResponse httpServletResponse) {
+    public String login(@RequestParam String email, @RequestParam String motDePasse, 
+                        @RequestParam(required = false) String redirectUrl, Model model, 
+                        HttpServletResponse httpServletResponse) {
         var response = authProxy.loginUtilisateur(email, motDePasse);
-
         if (response.getStatusCode() == HttpStatus.UNAUTHORIZED) {
             model.addAttribute("error", "Nom d'utilisateur ou mot de passe incorrect");
             return "login";
         }
-
         Map<String, Object> body = (Map<String, Object>) response.getBody();
-        
         String token = (String) body.get("token");
-
-        // Stocker le token dans un cookie
         Cookie authCookie = new Cookie("authToken", token);
-        authCookie.setHttpOnly(true); // Protéger contre les scripts
-        authCookie.setPath("/"); // Disponible pour toutes les pages
-        authCookie.setMaxAge(24 * 60 * 60); // Durée de vie de 24 heures (en secondes)
+        authCookie.setHttpOnly(true);
+        authCookie.setPath("/");
+        authCookie.setMaxAge(24 * 60 * 60);
         httpServletResponse.addCookie(authCookie);
+        return "redirect:" + (redirectUrl != null ? redirectUrl : "/");
+    }
 
-        return "accueil";
+    @GetMapping("/testimonial")
+    public String testimonial() {
+        return "testimonial";
+    }
 
         // Envoyer le token au backend pour obtenir le username
         /* ResponseEntity<?> userInfoResponse = etudiantService.getUserInfo(token);
@@ -129,5 +127,5 @@ public class SgdsController {
 
 
     
-}
+
 
