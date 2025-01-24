@@ -63,8 +63,8 @@
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Profil</a>
                             <div class="dropdown-menu rounded-0 m-0">
-                                <a href="testimonial.html" class="dropdown-item">Agent Collecteur</a>
-                                <a href="404.html" class="dropdown-item">Espace Client</a>
+                                <a th:href="@{/login(redirectUrl='/testimonial')}" class="dropdown-item">Agent Collecteur</a>
+                                <a th:href="@{/login(redirectUrl='/404')}" class="dropdown-item">Espace Client</a>
                             </div>
                         </div>
                         <a th:href="@{/contact}" class="nav-item nav-link">Contactez-nous</a>
