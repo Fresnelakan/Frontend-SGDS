@@ -3,6 +3,9 @@ package com.sgds.demo.Repository;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -57,6 +60,32 @@ public class AuthProxy {
         } catch (Exception e) {
             log.error("Erreur de connexion pour l'utilisateur {}: {}", usermail, e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        }
+    }
+
+
+    public ResponseEntity<?> getUserinfos(String token) {
+        String infosUrl = customProperties.getApiUrl() + "/api/users/infos";
+
+        // Créer un header pour le token
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        try {
+            // Appeler l'API et retourner la réponse.
+            ResponseEntity<Utilisateur> response = restTemplate.exchange(infosUrl, HttpMethod.GET, entity, Utilisateur.class);
+
+            return response;
+
+        } catch (HttpClientErrorException e) {
+            log.error("Erreur lors de la récupération des informations de l'utilisateur: {}", e.getMessage());
+            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
+        }
+        catch (Exception e) {
+            log.error("Erreur lors de la récupération des informations de l'utilisateur: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur inattendue lors de la récupération des informations de l'utilisateur");
         }
     }
     

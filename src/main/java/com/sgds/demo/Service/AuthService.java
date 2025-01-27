@@ -32,5 +32,13 @@ public class AuthService {
         return authProxy.loginUtilisateur(mail, password);
     }
 
+
+    /**
+     * Méthode pour récupérer les infos utilisateur
+     */
+    public ResponseEntity<?> getUserInfos(String token) {
+        return authProxy.getUserinfos(token);
+    }
+
     
 }

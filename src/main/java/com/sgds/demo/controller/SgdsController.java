@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import com.sgds.demo.Repository.AuthProxy;
+import com.sgds.demo.Service.AuthService;
 import com.sgds.demo.model.Utilisateur;
 
 import jakarta.servlet.http.Cookie;
@@ -23,6 +25,9 @@ public class SgdsController {
 
     @Autowired
     private AuthProxy authProxy;
+
+    @Autowired
+    private AuthService authService;
 
     @GetMapping("/")
     public String index() {
@@ -37,6 +42,7 @@ public class SgdsController {
         return "login";
     }
 
+    @SuppressWarnings({ "unchecked", "null" })
     @PostMapping("/login")
     public String login(@RequestParam String email, @RequestParam String motDePasse, 
                         @RequestParam(required = false) String redirectUrl, Model model, 
@@ -46,16 +52,31 @@ public class SgdsController {
             model.addAttribute("error", "Nom d'utilisateur ou mot de passe incorrect");
             return "login";
         }
-        @SuppressWarnings("unchecked")
         Map<String, Object> body = (Map<String, Object>) response.getBody();
-        @SuppressWarnings("null")
         String token = (String) body.get("token");
         Cookie authCookie = new Cookie("authToken", token);
         authCookie.setHttpOnly(true);
         authCookie.setPath("/");
         authCookie.setMaxAge(24 * 60 * 60);
         httpServletResponse.addCookie(authCookie);
-        return "redirect:" + (redirectUrl != null ? redirectUrl : "/");
+
+        ResponseEntity<?> userInfosResponse = authService.getUserInfos(token);
+
+        if (!userInfosResponse.getStatusCode().is2xxSuccessful()) {
+            return "redirect:/login";
+        }
+
+        Utilisateur utilisateur = (Utilisateur) userInfosResponse.getBody();
+
+        if (utilisateur.getRole() == Utilisateur.Role.SOUSCRIPTEUR) {
+            return "redirect:/404";
+        } else if(utilisateur.getRole() == Utilisateur.Role.AGENT) {
+            return "redirect:/testimonial";
+        } else {
+            return "login";
+        }
+
+        
     }
 
     @GetMapping("/testimonial")
@@ -74,10 +95,16 @@ public class SgdsController {
     return "register";
     }
 
-    @PostMapping("/register")
+   @PostMapping("/register")
     public String registerUser(@ModelAttribute Utilisateur utilisateur, Model model) {
-        // Ajoutez ici la logique pour sauvegarder l'utilisateur (ex: base de données)
-        return "redirect:/login"; 
+        // AJOUTEZ CE CODE POUR SAUVEGARDER L'UTILISATEUR
+        ResponseEntity<?> response = authProxy.register(utilisateur);
+        if (response.getStatusCode().is2xxSuccessful()) {
+            return "redirect:/login";
+        } else {
+            model.addAttribute("error", "Erreur lors de l'inscription");
+            return "register";
+        }
     }
 
 }

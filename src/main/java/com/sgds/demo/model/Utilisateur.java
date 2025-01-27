@@ -1,9 +1,10 @@
 package com.sgds.demo.model;
 
+import jakarta.persistence.Entity;
 import lombok.Data;
 
 
-
+@Entity
 
 @Data
 public class Utilisateur {
@@ -17,8 +18,9 @@ public class Utilisateur {
 
     private Role role;
 
+    private Double latitude;
+    private Double longitude;
 
-    private Adresse adresse;
 
     public enum Role {
         SOUSCRIPTEUR, AGENT;
