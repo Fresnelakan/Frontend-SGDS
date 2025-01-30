@@ -65,19 +65,44 @@
         // Initialisation de la carte
         function initMap() {
             map = L.map('map').setView([6.3728, 2.3542], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+            
+            // Utiliser OpenStreetMap avec gestion d'erreurs
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap',
+                subdomains: ['a', 'b', 'c'],  // Répartir la charge
+                errorTileUrl: 'https://via.placeholder.com/256x256?text=Tuile+indisponible'
+            }).on('tileerror', function (e) {
+                console.error('Tuile non chargée :', e.tile.src);
+            }).addTo(map);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+                maxZoom: 20,
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+        
             loadClients();
         }
 
         // Chargement des clients
         async function loadClients() {
             try {
-                const response = await axios.get('/api/utilisateurs/clients');
+                const response = await axios.get('http://localhost:8080/api/utilisateurs/clients');
                 console.log("Clients chargés:", response.data); // Ajoutez ce log pour vérifier les données
                 clients = response.data.filter(c => 
                     c.latitude !== null && 
                     c.longitude !== null
                 );
+                clients.forEach(client => {
+                    console.log("Client:", client.nom, "Lat:", client.latitude, "Lon:", client.longitude);
+                    L.marker([client.latitude, client.longitude], {
+                        icon: L.icon({
+                            iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+                            iconSize: [25, 41],
+                        })
+                    })
+                    .bindPopup(`${client.nom}`)
+                    .addTo(map);
+                });
                 updateMap();
             } catch (error) {
                 console.error('Erreur:', error);
@@ -93,6 +118,8 @@
                 }
             });
 
+        
+
             // Ajout des marqueurs
             clients.forEach(client => {
                 L.marker([client.latitude, client.longitude])
@@ -101,37 +128,96 @@
             });
         }
 
+        function decodePolyline(encoded) {
+            let index = 0, lat = 0, lng = 0, coordinates = [];
+            while (index < encoded.length) {
+                let shift = 0, result = 0, byte;
+                do {
+                    byte = encoded.charCodeAt(index++) - 63;
+                    result |= (byte & 0x1f) << shift;
+                    shift += 5;
+                } while (byte >= 0x20);
+                lat += ((result & 1) ? ~(result >> 1) : (result >> 1));
+        
+                shift = 0;
+                result = 0;
+                do {
+                    byte = encoded.charCodeAt(index++) - 63;
+                    result |= (byte & 0x1f) << shift;
+                    shift += 5;
+                } while (byte >= 0x20);
+                lng += ((result & 1) ? ~(result >> 1) : (result >> 1));
+        
+                coordinates.push([lat / 1e5, lng / 1e5]);
+            }
+            return coordinates;
+        }
+        
+
         // Gestionnaire d'optimisation
-        document.getElementById('optimiserBtn').addEventListener('click', async () => {
-            if(clients.length < 2) {
-                alert("Minimum 2 clients requis !");
-                return;
-            }
+            // Récupérer le token depuis l'URL et le stocker
+            document.addEventListener('DOMContentLoaded', () => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const token = urlParams.get('token');
+                if (token) {
+                    localStorage.setItem('authToken', token);
+                    window.history.replaceState({}, document.title, window.location.pathname); // Nettoyer l'URL
+                }
+            });
+        
+            document.getElementById('optimiserBtn').addEventListener('click', async () => {
+                try {
+                    const token = localStorage.getItem('authToken');
+                    if (!token) {
+                        alert("Veuillez vous connecter d'abord.");
+                        window.location.href = '/login';
+                        return;
+                    }
+                    
+                    const response = await axios.get('http://localhost:8080/api/trajets/optimiser', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+            
+                    console.log("🚀 Réponse complète de l'API GraphHopper :", response.data);
+            
+                    const encodedPoints = response.data.points; // 🔥 Correction ici
+                    console.log("📍 Points encodés reçus :", encodedPoints);
+            
+                    const routeData = decodePolyline(encodedPoints);
+                    console.log("📍 Coordonnées décodées :", routeData);
+            
+                    if (!routeData || routeData.length === 0) {
+                        alert("❌ Aucun chemin optimal trouvé !");
+                        return;
+                    }
+            
+                    if (currentRoute) map.removeLayer(currentRoute);
+            
+                    currentRoute = L.polyline(routeData, {
+                        color: '#4A90E2',
+                        weight: 6,
+                        lineJoin: 'round'
+                    }).addTo(map);
+            
+                    // Marqueurs de départ/arrivée
+                    L.marker(routeData[0])
+                        .bindPopup('<b>Départ</b>')
+                        .openPopup()
+                        .addTo(map);
+                    
+                    L.marker(routeData[routeData.length - 1])
+                        .bindPopup('<b>Arrivée</b>')
+                        .addTo(map);
+            
+                    map.fitBounds(currentRoute.getBounds());
+            
+                } catch (error) {
+                    console.error("❌ Erreur GraphHopper :", error.response?.data || error.message);
+                    alert("Erreur d'optimisation : " + (error.response?.data?.message || error.message));
+                }
+            });
+            
 
-            try {
-                const coords = clients.map(c => `${c.longitude},${c.latitude}`).join(';');
-                const response = await axios.get(
-                    `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full`
-                );
-
-                const routeData = response.data.routes[0].geometry.coordinates
-                    .map(coord => [coord[1], coord[0]]);
-
-                if(currentRoute) map.removeLayer(currentRoute);
-                
-                currentRoute = L.polyline(routeData, {
-                    color: '#FF6B6B',
-                    weight: 5,
-                    lineJoin: 'round'
-                }).addTo(map);
-
-                map.fitBounds(currentRoute.getBounds());
-
-            } catch (error) {
-                console.error("Erreur OSRM:", error);
-                alert("Erreur de calcul d'itinéraire");
-            }
-        });
 
         // Initialisation
         initMap();
