@@ -174,9 +174,7 @@
                         return;
                     }
                     
-                    const response = await axios.get('http://localhost:8080/api/trajets/optimiser', {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
+                    const response = await axios.get('http://localhost:8080/api/trajets/optimiser', {});
             
                     console.log("🚀 Réponse complète de l'API GraphHopper :", response.data);
             

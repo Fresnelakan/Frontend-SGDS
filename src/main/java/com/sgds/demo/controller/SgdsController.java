@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,7 +46,7 @@ public class SgdsController {
     @SuppressWarnings({ "unchecked", "null" })
     @PostMapping("/login")
     public String login(@RequestParam String email, @RequestParam String motDePasse, 
-                        @RequestParam(required = false) String redirectUrl, Model model, 
+                        Model model, 
                         HttpServletResponse httpServletResponse) {
         var response = authProxy.loginUtilisateur(email, motDePasse);
         if (response.getStatusCode() == HttpStatus.UNAUTHORIZED) {
@@ -80,7 +81,10 @@ public class SgdsController {
     }
 
     @GetMapping("/testimonial")
-    public String testimonial() {
+    public String testimonial(@CookieValue(name = "authToken") String token, Model model) {
+        if(token.isEmpty()) {
+            return "redirect:/login";
+        }
         return "testimonial";
     }
 
