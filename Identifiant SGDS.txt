@@ -1,0 +1,75 @@
+Identifiant des agents collecteurs
+[
+  {
+    "nom": "Koffi Adjanohoun",
+    "email": "koffi.agent@sgds.bj",
+    "motDePasse": "AgentPass123!",
+    "role": "AGENT",
+    "latitude": 6.3732,
+    "longitude": 2.3545
+  },
+  {
+    "nom": "Amina Orou",
+    "email": "amina.agent@sgds.bj",
+    "motDePasse": "AminaSecure456!",
+    "role": "AGENT",
+    "latitude": 6.3689,
+    "longitude": 2.3612
+  },
+  {
+    "nom": "Marc Tovonou",
+    "email": "marc.agent@sgds.bj",
+    "motDePasse": "MarcTov789!",
+    "role": "AGENT",
+    "latitude": 6.3776,
+    "longitude": 2.3498
+  }
+
+
+    {
+    "nom": "Batoko",
+    "email": "batoko@gmail.com",
+    "motDePasse": "boss2",
+    "role": "AGENT",
+    "latitude": 6.3776,
+    "longitude": 2.3498
+  }
+]
+
+Identifiants des souscripteurs
+[
+  {
+    "nom": "Fatou Diallo",
+    "email": "fatou.client@mail.bj",
+    "motDePasse": "FatouPass123!",
+    "role": "SOUSCRIPTEUR",
+    "latitude": 6.3701,
+    "longitude": 2.3583
+  },
+  {
+    "nom": "Jean Dossou",
+    "email": "jean.dossou@mail.bj",
+    "motDePasse": "Dossou2024!",
+    "role": "SOUSCRIPTEUR",
+    "latitude": 6.3754,
+    "longitude": 2.3527
+  },
+  {
+    "nom": "Aïcha Bello",
+    "email": "aicha.client@mail.bj",
+    "motDePasse": "AichaBello789!",
+    "role": "SOUSCRIPTEUR",
+    "latitude": 6.3812,
+    "longitude": 2.3471
+  }
+   
+  {
+    "nom": "Rosette",
+    "email": "rosetteakan@gmail.com",
+    "motDePasse": "rosette",
+    "role": "SOUSCRIPTEUR",
+    "latitude": 6.3812,
+    "longitude": 2.3471
+  }
+
+]

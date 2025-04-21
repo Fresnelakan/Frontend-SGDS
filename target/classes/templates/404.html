@@ -99,5 +99,34 @@
             }
         });
     </script>
+
+    <!-- Ajouter ce script avant la balise </body> -->
+<script>
+    document.querySelector('form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const message = document.querySelector('textarea').value;
+        
+        try {
+            const response = await fetch('http://localhost:8080/api/notifications', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({ message })
+            });
+    
+            if (response.ok) {
+                alert('Message envoyé !');
+                document.querySelector('textarea').value = '';
+            } else {
+                alert('Erreur lors de l\'envoi');
+            }
+        } catch (error) {
+            console.error('Erreur:', error);
+            alert('Erreur réseau');
+        }
+    });
+    </script>
 </body>
 </html>

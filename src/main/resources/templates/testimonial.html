@@ -168,11 +168,11 @@
             document.getElementById('optimiserBtn').addEventListener('click', async () => {
                 try {
                     const token = localStorage.getItem('authToken');
-                    if (!token) {
+                    /*if (!token) {
                         alert("Veuillez vous connecter d'abord.");
                         window.location.href = '/login';
                         return;
-                    }
+                    }*/
                     
                     const response = await axios.get('http://localhost:8080/api/trajets/optimiser', {});
             
